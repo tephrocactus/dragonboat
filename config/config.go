@@ -658,7 +658,12 @@ func (c *NodeHostConfig) GetListenAddress() string {
 // TLS settings in NodeHostConfig.
 func (c *NodeHostConfig) GetServerTLSConfig() (*tls.Config, error) {
 	if c.MutualTLS {
-		return netutil.GetServerTLSConfig(c.CAFile, c.CertFile, c.KeyFile)
+		tlsConfig, err := netutil.GetServerTLSConfig(c.CAFile, c.CertFile, c.KeyFile)
+		if err != nil {
+			return nil, err
+		}
+		tlsConfig.CipherSuites = defaultCipherSuites
+		return tlsConfig, nil
 	}
 	return nil, nil
 }
